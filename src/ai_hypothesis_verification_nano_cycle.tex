@@ -31,8 +31,13 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 
-\title{\textbf{AI Hypothesis-Verification Nano Cycle\texttrademark} \\ \Large \ifja 確率的知性を決定論的境界で手懐ける極小反復アーキテクチャ \else Taming Probabilistic Intelligence with Deterministic Boundaries \fi}
-\author{\ifja 株式会社 Section 9 \\ Engineering \& Architecture Team \else Section 9 Inc. \\ Engineering \& Architecture Team \fi}
+\ifja
+  \title{\textbf{AI Hypothesis-Verification Nano Cycle\texttrademark} \\ \Large 確率的知性を決定論的境界で手懐ける極小反復アーキテクチャ}
+  \author{株式会社 Section 9 \\ Engineering \& Architecture Team}
+\else
+  \title{\textbf{AI Hypothesis-Verification Nano Cycle\texttrademark} \\ \Large Taming Probabilistic Intelligence with Deterministic Boundaries}
+  \author{Section 9 Inc. \\ Engineering \& Architecture Team}
+\fi
 \date{October 2026}
 
 \begin{document}
@@ -40,30 +45,33 @@
 \frontmatter
 \maketitle
 
-\chapter*{\ifja 前書き \else Preface \fi}
 \ifja
-本稿の目的は、生成AI（LLM）を用いたソフトウェア工学において蔓延する「巨大なプロンプトによる一括生成の幻想」を解体し、科学的かつ決定論的な超高速開発手法である \textbf{AI Hypothesis-Verification Nano Cycle\texttrademark}（AI仮説検証ナノサイクル\texttrademark）の理論的基盤と実践体系を確立することにある。
+  \chapter*{前書き}
+  本稿の目的は、生成AI（LLM）を用いたソフトウェア工学において蔓延する「巨大なプロンプトによる一括生成の幻想」を解体し、科学的かつ決定論的な超高速開発手法である \textbf{AI Hypothesis-Verification Nano Cycle\texttrademark}（AI仮説検証ナノサイクル\texttrademark）の理論的基盤と実践体系を確立することにある。
 
-確からしいトークンを確率的に紡ぎ出すAIに対して、人間が果たすべき真の役割とは何か。半世紀に及ぶUNIX哲学、静的型付けコンパイラ、そしてミリ秒単位のテストハーネスがいかにして現代の最先端知能の外骨格となり得るのかを詳説する。
+  確からしいトークンを確率的に紡ぎ出すAIに対して、人間が果たすべき真の役割とは何か。半世紀に及ぶUNIX哲学、静的型付けコンパイラ、そしてミリ秒単位のテストハーネスがいかにして現代の最先端知能の外骨格となり得るのかを詳説する。
 \else
-The objective of this manuscript is to dismantle the prevailing illusion of monolithic, prompt-driven generation in AI-assisted software engineering, and to establish the theoretical foundations and pragmatic architecture of the \textbf{AI Hypothesis-Verification Nano Cycle\texttrademark} (AHV-NC).
+  \chapter*{Preface}
+  The objective of this manuscript is to dismantle the prevailing illusion of monolithic, prompt-driven generation in AI-assisted software engineering, and to establish the theoretical foundations and pragmatic architecture of the \textbf{AI Hypothesis-Verification Nano Cycle\texttrademark} (AHV-NC).
 
-When confronting an AI model that autoregressively generates plausible tokens based on likelihood, what is the authentic role of human engineers? We demonstrate how fifty years of UNIX philosophy, statically typed compilers, and sub-second test harnesses serve as the indispensable exoskeleton for contemporary intelligence.
+  When confronting an AI model that autoregressively generates plausible tokens based on likelihood, what is the authentic role of human engineers? We demonstrate how fifty years of UNIX philosophy, statically typed compilers, and sub-second test harnesses serve as the indispensable exoskeleton for contemporary intelligence.
 \fi
 
 \tableofcontents
 
 \mainmatter
 
-\chapter{\ifja 現行LLM開発の構造的病理とハルシネーション \else Structural Pathology of Current LLM Development and Hallucinations \fi}
-
-\section{\ifja 確率的尤度と決定論的真偽の根本的乖離 \else Fundamental Divergence Between Probabilistic Likelihood and Deterministic Truth \fi}
+% Chapter 1
 \ifja
-大規模言語モデル（Large Language Model; LLM）は、本質的に「先行するトークン列に対して最も事後確率の高い次トークンを自己回帰的に予測する」確率統計マシンである。
-数式として表せば、トークン列 $T = (t_1, t_2, \dots, t_n)$ に対する生成過程は次の条件付き確率の最大化に過ぎない。
+  \chapter{現行LLM開発の構造的病理とハルシネーション}
+  \section{確率的尤度と決定論的真偽の根本的乖離}
+  大規模言語モデル（Large Language Model; LLM）は、本質的に「先行するトークン列に対して最も事後確率の高い次トークンを自己回帰的に予測する」確率統計マシンである。
+  数式として表せば、トークン列 $T = (t_1, t_2, \dots, t_n)$ に対する生成過程は次の条件付き確率の最大化に過ぎない。
 \else
-A Large Language Model (LLM) is fundamentally a probabilistic statistical engine designed to autoregressively sample the next token with the highest conditional probability given preceding tokens.
-Mathematically, the generation of token sequence $T = (t_1, t_2, \dots, t_n)$ is governed by the product of conditional likelihoods:
+  \chapter{Structural Pathology of Current LLM Development and Hallucinations}
+  \section{Fundamental Divergence Between Probabilistic Likelihood and Deterministic Truth}
+  A Large Language Model (LLM) is fundamentally a probabilistic statistical engine designed to autoregressively sample the next token with the highest conditional probability given preceding tokens.
+  Mathematically, the generation of token sequence $T = (t_1, t_2, \dots, t_n)$ is governed by the product of conditional likelihoods:
 \fi
 
 \begin{equation}
@@ -71,46 +79,47 @@ P(T) = \prod_{i=1}^n P(t_i \mid t_1, t_2, \dots, t_{i-1})
 \end{equation}
 
 \ifja
-この定式化が意味する決定的な事実は、\textbf{「LLMはコードが論理的に正しいから出力しているのではなく、その文脈において最も尤もらしい（plausible）文字列をサンプリングしているに過ぎない」}という点である。
-ソフトウェアの正当性は二値的（Binary: True or False）であり、コンパイラや実行時環境によって一切の妥協なく判定される決定論（Determinism）の世界に属する。
-一方で、LLMの出力は連続的な確率分布空間から生み出される。この「確率的尤度」と「決定論的真偽」の決定的な乖離こそが、いわゆる\textbf{ハルシネーション（幻覚）}の真因である。
+  この定式化が意味する決定的な事実は、\textbf{「LLMはコードが論理的に正しいから出力しているのではなく、その文脈において最も尤もらしい（plausible）文字列をサンプリングしているに過ぎない」}という点である。
+  ソフトウェアの正当性は二値的（Binary: True or False）であり、コンパイラや実行時環境によって一切の妥協なく判定される決定論（Determinism）の世界に属する。
+  一方で、LLMの出力は連続的な確率分布空間から生み出される。この「確率的尤度」と「決定論的真偽」の決定的な乖離こそが、いわゆる\textbf{ハルシネーション（幻覚）}の真因である。
+
+  \section{累積するハルシネーションと認知的迷妄}
+  多くの開発者は、AIがもっともらしい関数シグネチャ、存在しない外部ライブラリのAPI、巧妙に隠蔽されたオフバイワン・エラーを出力した際、それをプロンプトの工夫（Prompt Engineering）によって矯正しようと試みる。
+  しかし、自己回帰モデルの性質上、一度文脈（Context Window）に誤った仮定や微小な歪みが混入すると、後続の生成はその誤謬を前提条件としてサンプリングを行うため、誤りは幾何級数的に累積していく。
+
+  \begin{itemize}
+    \item \textbf{トークン空間における軌道離脱}: 初期の微小な不整合が、文脈の伸長とともに修復不可能な仕様の歪みへと発散する。
+    \item \textbf{人間の認知バイアス}: 表層的なコードスタイルが美しく整形されているため、人間側が論理の欠陥を見落とし、受動的な追認（Rubber-stamping）に陥る。
+    \item \textbf{デバッグ空間の肥大化}: どこまでが動作保証されたコードで、どこからが幻覚なのかの境界線が完全に消失する。
+  \end{itemize}
 \else
-This formulation exposes an inescapable axiom: \textbf{an LLM does not emit code because it is logically proven; it merely samples the most plausible token sequence within the given context.}
-Software correctness is binary (True or False), judged without compromise by compilers and deterministic execution environments. In contrast, LLM outputs originate from continuous probability distributions. This fundamental divide between probabilistic likelihood and deterministic correctness constitutes the root cause of hallucinations.
+  This formulation exposes an inescapable axiom: \textbf{an LLM does not emit code because it is logically proven; it merely samples the most plausible token sequence within the given context.}
+  Software correctness is binary (True or False), judged without compromise by compilers and deterministic execution environments. In contrast, LLM outputs originate from continuous probability distributions. This fundamental divide between probabilistic likelihood and deterministic correctness constitutes the root cause of hallucinations.
+
+  \section{Compounding Hallucinations and Cognitive Entanglement}
+  When an LLM produces plausible signatures, non-existent third-party APIs, or subtle off-by-one errors, developers often attempt to correct them through refined prompts.
+  However, due to the autoregressive nature of LLMs, once an erroneous premise enters the context window, subsequent tokens are sampled conditioned on that distortion. Consequently, errors compound exponentially.
+
+  \begin{itemize}
+    \item \textbf{Orbital Drift in Token Space}: A minor initial flaw diverges into irreparable architectural distortion as context elongates.
+    \item \textbf{Cognitive Rubber-Stamping}: Beautifully formatted code induces human confirmation bias, causing developers to overlook deep logical flaws.
+    \item \textbf{Explosion of the Debug Surface}: The boundary between validated logic and hallucinated syntax dissolves completely.
+  \end{itemize}
 \fi
 
-\section{\ifja 累積するハルシネーションと認知的迷妄 \else Compounding Hallucinations and Cognitive Entanglement \fi}
+% Chapter 2
 \ifja
-多くの開発者は、AIがもっともらしい関数シグネチャ、存在しない外部ライブラリのAPI、巧妙に隠蔽されたオフバイワン・エラーを出力した際、それをプロンプトの工夫（Prompt Engineering）によって矯正しようと試みる。
-しかし、自己回帰モデルの性質上、一度文脈（Context Window）に誤った仮定や微小な歪みが混入すると、後続の生成はその誤謬を前提条件としてサンプリングを行うため、誤りは幾何級数的に累積していく。
+  \chapter{巨大モノリス生成の破綻：なぜ「一発生成」は無理ゲーなのか}
+  \section{状態空間の爆発（State Space Explosion）}
+  「要件定義書を丸ごとプロンプトに投入し、完成したリポジトリ全体を一度に出力させる」というアプローチが確実に破綻する理由は、ソフトウェア工学における状態空間の幾何学的爆発によって数学的に説明できる。
 
-\begin{itemize}
-  \item \textbf{トークン空間における軌道離脱}: 初期の微小な不整合が、文脈の伸長とともに修復不可能な仕様の歪みへと発散する。
-  \item \textbf{人間の認知バイアス}: 表層的なコードスタイルが美しく整形されているため、人間側が論理の欠陥を見落とし、受動的な追認（Rubber-stamping）に陥る。
-  \item \textbf{デバッグ空間の肥大化}: どこまでが動作保証されたコードで、どこからが幻覚なのかの境界線が完全に消失する。
-\end{itemize}
+  モジュール $M$ が $k$ 個の内部状態変数 $s_1, s_2, \dots, s_k$ を持ち、それぞれが有限の離散値を取ると仮定した場合、システム全体の状態空間 $S$ の濃度はモジュールの結合に伴い指数関数的に増大する。
 \else
-When an LLM produces plausible signatures, non-existent third-party APIs, or subtle off-by-one errors, developers often attempt to correct them through refined prompts.
-However, due to the autoregressive nature of LLMs, once an erroneous premise enters the context window, subsequent tokens are sampled conditioned on that distortion. Consequently, errors compound exponentially.
+  \chapter{The Fallacy of Monolithic Generation: Why One-Shot Prompting Fails}
+  \section{State Space Explosion}
+  The expectation that one can feed an entire specification into a prompt and receive a functioning repository in a single shot collapses under the combinatorial weight of state space explosion.
 
-\begin{itemize}
-  \item \textbf{Orbital Drift in Token Space}: A minor initial flaw diverges into irreparable architectural distortion as context elongates.
-  \item \textbf{Cognitive Rubber-Stamping}: Beautifully formatted code induces human confirmation bias, causing developers to overlook deep logical flaws.
-  \item \textbf{Explosion of the Debug Surface}: The boundary between validated logic and hallucinated syntax dissolves completely.
-\end{itemize}
-\fi
-
-\chapter{\ifja 巨大モノリス生成の破綻：なぜ「一発生成」は無理ゲーなのか \else The Fallacy of Monolithic Generation: Why One-Shot Prompting Fails \fi}
-
-\section{\ifja 状態空間の爆発（State Space Explosion） \else State Space Explosion \fi}
-\ifja
-「要件定義書を丸ごとプロンプトに投入し、完成したリポジトリ全体を一度に出力させる」というアプローチが確実に破綻する理由は、ソフトウェア工学における状態空間の幾何学的爆発によって数学的に説明できる。
-
-モジュール $M$ が $k$ 個の内部状態変数 $s_1, s_2, \dots, s_k$ を持ち、それぞれが有限の離散値を取ると仮定した場合、システム全体の状態空間 $S$ の濃度はモジュールの結合に伴い指数関数的に増大する。
-\else
-The expectation that one can feed an entire specification into a prompt and receive a functioning repository in a single shot collapses under the combinatorial weight of state space explosion.
-
-If a module $M$ possesses $k$ internal state variables $s_1, s_2, \dots, s_k$, the cardinality of the system's aggregate state space $S$ grows exponentially as modules become coupled:
+  If a module $M$ possesses $k$ internal state variables $s_1, s_2, \dots, s_k$, the cardinality of the system's aggregate state space $S$ grows exponentially as modules become coupled:
 \fi
 
 \begin{equation}
@@ -118,149 +127,175 @@ If a module $M$ possesses $k$ internal state variables $s_1, s_2, \dots, s_k$, t
 \end{equation}
 
 \ifja
-一挙に数百行から数千行のモノリシックなコードベースを生成させた場合、AI自身も人間も、その状態空間網羅性（State Coverage）を静的に把握することは不可能となる。
+  一挙に数百行から数千行のモノリシックなコードベースを生成させた場合、AI自身も人間も、その状態空間網羅性（State Coverage）を静的に把握することは不可能となる。
+
+  \section{マクロサイクルの悲劇と開発者の遭難}
+  巨大なコード生成を単位とする「マクロサイクル」においては、フィードバック遅延（Feedback Latency）が致命的なボトルネックとなる。
 \else
-When generating monolithic code bases comprising hundreds or thousands of lines in one pass, neither human nor model can statically verify state space coverage.
+  When generating monolithic code bases comprising hundreds or thousands of lines in one pass, neither human nor model can statically verify state space coverage.
+
+  \section{The Tragedy of Macro Cycles and Developer Wandering}
+  In macro-cycle workflows targeting large code units, feedback latency becomes a fatal operational bottleneck.
 \fi
 
-\section{\ifja マクロサイクルの悲劇と開発者の遭難 \else The Tragedy of Macro Cycles and Developer Wandering \fi}
 \ifja
-巨大なコード生成を単位とする「マクロサイクル」においては、フィードバック遅延（Feedback Latency）が致命的なボトルネックとなる。
+  \begin{table}[htbp]
+    \centering
+    \begin{tabular}{lll}
+      \toprule
+      \textbf{指標} & \textbf{従来のマクロプロンプト生成} & \textbf{ナノサイクル手法} \\
+      \midrule
+      生成単位 & 1ファイル全体・数百行 & 極小ブロック（10〜30行） \\
+      検証手段 & 目視・手動操作 & 静的コンパイル・自動単体テスト \\
+      検証レイテンシ & 数分〜数十分 & \textbf{数ミリ秒〜数秒} \\
+      疑義の局所性 & システム全体 & \textbf{直前の数行のみ} \\
+      状態境界 & 密結合・外部副作用 & \textbf{疎結合・純粋関数} \\
+      \bottomrule
+    \end{tabular}
+    \caption{マクロ生成アプローチとナノサイクルアプローチの比較}
+  \end{table}
+
+  マクロ生成では、ビルドエラーや論理破綻が発生した際、「言語仕様の不一致」「未定義の型」「暗黙のグローバル状態」「APIの破壊的変更」のどれが根本原因であるかを切り分けるために数時間を浪費する。結果として開発者はAIの生成物の後始末に忙殺され、自律的な思考を奪われて途方に暮れることになる。
 \else
-In macro-cycle workflows targeting large code units, feedback latency becomes a fatal operational bottleneck.
+  \begin{table}[htbp]
+    \centering
+    \begin{tabular}{lll}
+      \toprule
+      \textbf{Metric} & \textbf{Conventional Macro Generation} & \textbf{Nano Cycle Architecture} \\
+      \midrule
+      Granularity & Monolithic file (100+ lines) & Atomic block (10--30 lines) \\
+      Verification & Manual inspection & Compiler \& Automated Tests \\
+      Latency & Minutes to hours & \textbf{Sub-second to seconds} \\
+      Suspicion Scope & Whole codebase & \textbf{Preceding 10 lines only} \\
+      Boundary & Entangled side effects & \textbf{Isolated pure functions} \\
+      \bottomrule
+    \end{tabular}
+    \caption{Comparison: Macro Prompting vs. Nano Cycle Architecture}
+  \end{table}
+
+  When a failure occurs in a macro generation, hours are squandered determining whether the culprit is an API mismatch, missing type, implicit global mutation, or hallucination. Developers end up cleaning up synthetic wreckage, losing control of their own architecture.
 \fi
 
-\begin{table}[htbp]
-  \centering
-  \begin{tabular}{lll}
-    \toprule
-    \textbf{\ifja 指標 \else Metric \fi} & \textbf{\ifja 従来のマクロプロンプト生成 \else Conventional Macro Generation \fi} & \textbf{\ifja ナノサイクル手法 \else Nano Cycle Architecture \fi} \\
-    \midrule
-    \ifja 生成単位 \else Granularity \fi & \ifja 1ファイル全体・数百行 \else Monolithic file (100+ lines) \fi & \ifja 極小ブロック（10〜30行） \else Atomic block (10--30 lines) \fi \\
-    \ifja 検証手段 \else Verification \fi & \ifja 目視・手動操作 \else Manual inspection \fi & \ifja 静的コンパイル・自動単体テスト \else Compiler \& Automated Tests \fi \\
-    \ifja 検証レイテンシ \else Latency \fi & \ifja 数分〜数十分 \else Minutes to hours \fi & \textbf{\ifja 数ミリ秒〜数秒 \else Sub-second to seconds \fi} \\
-    \ifja 疑義の局所性 \else Suspicion Scope \fi & \ifja システム全体 \else Whole codebase \fi & \textbf{\ifja 直前の数行のみ \else Preceding 10 lines only \fi} \\
-    \ifja 状態境界 \else Boundary \fi & \ifja 密結合・外部副作用 \else Entangled side effects \fi & \textbf{\ifja 疎結合・純粋関数 \else Isolated pure functions \fi} \\
-    \bottomrule
-  \end{tabular}
-  \caption{\ifja マクロ生成アプローチとナノサイクルアプローチの比較 \else Comparison: Macro Prompting vs. Nano Cycle Architecture \fi}
-\end{table}
-
+% Chapter 3
 \ifja
-マクロ生成では、ビルドエラーや論理破綻が発生した際、「言語仕様の不一致」「未定義の型」「暗黙のグローバル状態」「APIの破壊的変更」のどれが根本原因であるかを切り分けるために数時間を浪費する。結果として開発者はAIの生成物の後始末に忙殺され、自律的な思考を奪われて途方に暮れることになる。
+  \chapter{AI Hypothesis-Verification Nano Cycle\texttrademark の理論と構造}
+  \section{基本公理：極小仮説としてのコード断片}
+  本稿が提唱する \textbf{AI Hypothesis-Verification Nano Cycle\texttrademark (AHV-NC)} の中核公理は極めて明快である。
+
+  \begin{quote}
+  \textit{「AIが生成するコードを完成品として扱ってはならない。それは、極小の論理境界に対して提示された、検証されるべき単なる『仮説（Hypothesis）』に過ぎない。」}
+  \end{quote}
+
+  この仮説を、人間の解釈や主観を介在させず、\textbf{決定論的な検証機械（Deterministic Verification Machine）}によって数秒以内に真偽判定（Pass or Fail）し、真と証明されたものだけを即座にコミットして不可逆な真実（Single Source of Truth; SSOT）へと昇華させる。
+
+  \section{4拍子の駆動機関（The 4-Beat Engine）}
+  AHV-NC は以下の高速な4工程を1拍とし、数十秒のサイクルで休むことなく回転する。
+
+  \begin{enumerate}
+    \item \textbf{第1拍：極小仮説の境界定義（Atomic Hypothesis Framing）}\\
+      人間がアーキテクチャの骨格、入出力の型、境界制約（Path Isolation、CGOフリー等）を決定し、AIに単一挙動のコード仮説を生成させる。
+    \item \textbf{第2拍：決定論的即時検証（Sub-Second Machine Verification）}\\
+      生成物を即座にコンパイラおよびテストランナーへ流し込む。終了コード（Exit Code 0）と標準出力ストリームのみで機械的に判定する。
+    \item \textbf{第3拍：生のエラー差分還流（Raw Differential Feedback）}\\
+      検証失敗時、人間は言い訳を排し、エラー出力やスタックトレースを生のままAIに差し戻す。探索空間が局所化されているため、1反復で収束する。
+    \item \textbf{第4拍：即時封印と境界固定（Checkpoint Sealing）}\\
+      検証に成功したコード断片は、その瞬間にGitコミットおよびパッケージング定義（PKGBUILD等）によって固定される。
+  \end{enumerate}
 \else
-When a failure occurs in a macro generation, hours are squandered determining whether the culprit is an API mismatch, missing type, implicit global mutation, or hallucination. Developers end up cleaning up synthetic wreckage, losing control of their own architecture.
+  \chapter{Theory and Architecture of AI Hypothesis-Verification Nano Cycle\texttrademark}
+  \section{Core Axiom: Code Snippets as Atomic Hypotheses}
+  The core axiom of the \textbf{AI Hypothesis-Verification Nano Cycle\texttrademark (AHV-NC)} is straightforward:
+
+  \begin{quote}
+  \textit{"Never treat AI-generated code as a finished product. It is merely an atomic hypothesis formulated against a localized boundary, awaiting deterministic proof."}
+  \end{quote}
+
+  Without subjective human rationalization, this hypothesis is immediately evaluated by a \textbf{deterministic verification machine} within seconds. Only verified code is committed into the single source of truth (SSOT).
+
+  \section{The 4-Beat Engine}
+  AHV-NC operates as a continuous, four-beat mechanical engine:
+
+  \begin{enumerate}
+    \item \textbf{Beat 1: Atomic Hypothesis Framing}\\
+      The human architect enforces boundaries (e.g., path isolation, CGO-free, strict interface types) and directs the LLM to emit a hypothesis for a single responsibility.
+    \item \textbf{Beat 2: Sub-Second Machine Verification}\\
+      The code is piped into the compiler and test harness. The outcome is determined strictly via binary exit codes (`0` vs. non-zero) and standard streams.
+    \item \textbf{Beat 3: Raw Differential Feedback}\\
+      Upon failure, raw stderr and compile diagnostics are piped back into the context without editorializing. Because the search space is localized, the AI converges on the fix in a single iteration.
+    \item \textbf{Beat 4: Checkpoint Sealing}\\
+      The validated unit is immediately sealed via Git commits and package recipes (such as PKGBUILD), eliminating the need to re-verify historic code in subsequent cycles.
+  \end{enumerate}
 \fi
 
-\chapter{\ifja AI Hypothesis-Verification Nano Cycle\texttrademark の理論と構造 \else Theory and Architecture of AI Hypothesis-Verification Nano Cycle\texttrademark \fi}
-
-\section{\ifja 基本公理：極小仮説としてのコード断片 \else Core Axiom: Code Snippets as Atomic Hypotheses \fi}
+% Chapter 4
 \ifja
-本稿が提唱する \textbf{AI Hypothesis-Verification Nano Cycle\texttrademark (AHV-NC)} の中核公理は極めて明快である。
+  \chapter{コンパイル言語と超高速TDD：機械的オラクルの構築}
+  \section{なぜスクリプト言語ではなく静的型付けコンパイル言語なのか}
+  AHV-NC を極限の速度で回転させるための触媒は、\textbf{強力な静的型付けを持つコンパイル言語（Go, Rust, C++ 等）}である。
 
-\begin{quote}
-\textit{「AIが生成するコードを完成品として扱ってはならない。それは、極小の論理境界に対して提示された、検証されるべき単なる『仮説（Hypothesis）』に過ぎない。」}
-\end{quote}
+  \begin{itemize}
+    \item \textbf{コンパイラという第1のオラクル}: 型チェッカ、リンカ、メモリレイアウト検証器は、AI仮説に対する冷酷で無慈悲な自動証明器（Automated Prover）として機能する。
+    \item \textbf{外部依存の極小化}: CGOを排除した純粋Goバイナリ等を採用することで、環境依存性のエントロピーをゼロに封じ込める。
+  \end{itemize}
 
-この仮説を、人間の解釈や主観を介在させず、\textbf{決定論的な検証機械（Deterministic Verification Machine）}によって数秒以内に真偽判定（Pass or Fail）し、真と証明されたものだけを即座にコミットして不可逆な真実（Single Source of Truth; SSOT）へと昇華させる。
+  \section{ミリ秒テストハーネスによる不変条件の防衛}
+  コンパイルを通過したコードは、直ちにインメモリ・モックや単体テストによって検証される。
+  Goの標準テストツール（\texttt{go test}）のように、キャッシュを活用して200ミリ秒以内で結果を返すテストハーネスこそが、開発者の脳を一切コンテキストスイッチさせずに「思考の速度」を維持する生命線となる。
 \else
-The core axiom of the \textbf{AI Hypothesis-Verification Nano Cycle\texttrademark (AHV-NC)} is straightforward:
+  \chapter{Compiled Languages and Sub-Second TDD: Engineering the Machine Oracle}
+  \section{Why Statically Typed Compiled Languages Eclipse Scripting Languages}
+  The catalyst driving AHV-NC at maximum velocity is a \textbf{statically typed compiled language (such as Go, Rust, or C++)}.
 
-\begin{quote}
-\textit{"Never treat AI-generated code as a finished product. It is merely an atomic hypothesis formulated against a localized boundary, awaiting deterministic proof."}
-\end{quote}
+  \begin{itemize}
+    \item \textbf{The Compiler as the Primary Oracle}: Type checkers and linkers act as merciless automated provers against probabilistic AI hallucinations.
+    \item \textbf{Zero Environmental Entropy}: Adopting CGO-free pure binaries or self-contained toolchains guarantees deterministic reproducibility across environments.
+  \end{itemize}
 
-Without subjective human rationalization, this hypothesis is immediately evaluated by a \textbf{deterministic verification machine} within seconds. Only verified code is committed into the single source of truth (SSOT).
+  \section{Millisecond Test Harnesses and Invariant Defense}
+  Code passing compilation is instantly subject to unit and invariant checks.
+  Test harnesses executing within 200 milliseconds (such as `go test`) prevent cognitive task-switching, sustaining thought-speed development.
 \fi
 
-\section{\ifja 4拍子の駆動機関（The 4-Beat Engine） \else The 4-Beat Engine \fi}
+% Chapter 5
 \ifja
-AHV-NC は以下の高速な4工程を1拍とし、数十秒のサイクルで休むことなく回転する。
+  \chapter{UNIX哲学の現代的具現と実践的規律}
+  \section{半世紀前の原則がAIの手綱となる理由}
+  UNIXの伝統的な教義――「1つのことを巧みにこなすプログラムを書け」「標準ストリームを通じて連携させよ」――は、現代のAI協調開発において真価を発揮する。
 
-\begin{enumerate}
-  \item \textbf{第1拍：極小仮説の境界定義（Atomic Hypothesis Framing）}\\
-    人間がアーキテクチャの骨格、入出力の型、境界制約（Path Isolation、CGOフリー等）を決定し、AIに単一挙動のコード仮説を生成させる。
-  \item \textbf{第2拍：決定論的即時検証（Sub-Second Machine Verification）}\\
-    生成物を即座にコンパイラおよびテストランナーへ流し込む。終了コード（Exit Code 0）と標準出力ストリームのみで機械的に判定する。
-  \item \textbf{第3拍：生のエラー差分還流（Raw Differential Feedback）}\\
-    検証失敗時、人間は言い訳を排し、エラー出力やスタックトレースを生のままAIに差し戻す。探索空間が局所化されているため、1反復で収束する。
-  \item \textbf{第4拍：即時封印と境界固定（Checkpoint Sealing）}\\
-    検証に成功したコード断片は、その瞬間にGitコミットおよびパッケージング定義（PKGBUILD等）によって固定される。
-\end{enumerate}
+  \begin{itemize}
+    \item \textbf{プロセスの直交性}: 各モジュールが標準入出力と明確なプロセス終了ステータスを持つことで、AI生成モジュール同士の干渉が物理的に遮断される。
+    \item \textbf{Path Isolation と最小権限}: 専用ディレクトリ（例: \texttt{\textasciitilde/.local/share/ssh-to/machines}）に隔離することで、AI生成ツールが既存環境を破壊するリスクを予防する。
+  \end{itemize}
 \else
-AHV-NC operates as a continuous, four-beat mechanical engine:
+  \chapter{Contemporary Embodiment of UNIX Philosophy and Practical Discipline}
+  \section{Why Half-Century-Old Axioms Harness AI Entropy}
+  The classical UNIX doctrine—"Write programs that do one thing and do it well" and "Write programs to handle text streams"—finds its ultimate purpose in AI-augmented engineering.
 
-\begin{enumerate}
-  \item \textbf{Beat 1: Atomic Hypothesis Framing}\\
-    The human architect enforces boundaries (e.g., path isolation, CGO-free, strict interface types) and directs the LLM to emit a hypothesis for a single responsibility.
-  \item \textbf{Beat 2: Sub-Second Machine Verification}\\
-    The code is piped into the compiler and test harness. The outcome is determined strictly via binary exit codes (`0` vs. non-zero) and standard streams.
-  \item \textbf{Beat 3: Raw Differential Feedback}\\
-    Upon failure, raw stderr and compile diagnostics are piped back into the context without editorializing. Because the search space is localized, the AI converges on the fix in a single iteration.
-  \item \textbf{Beat 4: Checkpoint Sealing}\\
-    The validated unit is immediately sealed via Git commits and package recipes (such as PKGBUILD), eliminating the need to re-verify historic code in subsequent cycles.
-\end{enumerate}
+  \begin{itemize}
+    \item \textbf{Process Orthogonality}: Modules interacting solely via standard I/O and process exit statuses mechanically isolate synthetic side-effects.
+    \item \textbf{Path Isolation and Scoping}: Confining dynamic binaries to dedicated namespaces prevents runtime contamination.
+  \end{itemize}
 \fi
 
-\chapter{\ifja コンパイル言語と超高速TDD：機械的オラクルの構築 \else Compiled Languages and Sub-Second TDD: Engineering the Machine Oracle \fi}
-
-\section{\ifja なぜスクリプト言語ではなく静的型付けコンパイル言語なのか \else Why Statically Typed Compiled Languages Eclipse Scripting Languages \fi}
+% Chapter 6
 \ifja
-AHV-NC を極限の速度で回転させるための触媒は、\textbf{強力な静的型付けを持つコンパイル言語（Go, Rust, C++ 等）}である。
-
-\begin{itemize}
-  \item \textbf{コンパイラという第1のオラクル}: 型チェッカ、リンカ、メモリレイアウト検証器は、AI仮説に対する冷酷で無慈悲な自動証明器（Automated Prover）として機能する。
-  \item \textbf{外部依存の極小化}: CGOを排除した純粋Goバイナリ等を採用することで、環境依存性のエントロピーをゼロに封じ込める。
-\end{itemize}
+  \chapter{結語：自律的アーキテクトの矜持}
+  AIは開発者の代行者ではない。それは、厳密に設計されたレールの上を疾走するタービンである。
+  手綱（アーキテクチャ規律）を握り、境界を敷き、コンパイラとテストハーネスを監視員として配備すること。これこそが、情報エントロピーの荒波に呑まれることなく、堅牢で純度の高いシステムを光速で組み上げる唯一無二の道である。
 \else
-The catalyst driving AHV-NC at maximum velocity is a \textbf{statically typed compiled language (such as Go, Rust, or C++)}.
-
-\begin{itemize}
-  \item \textbf{The Compiler as the Primary Oracle}: Type checkers and linkers act as merciless automated provers against probabilistic AI hallucinations.
-  \item \textbf{Zero Environmental Entropy}: Adopting CGO-free pure binaries or self-contained toolchains guarantees deterministic reproducibility across environments.
-\end{itemize}
-\fi
-
-\section{\ifja ミリ秒テストハーネスによる不変条件の防衛 \else Millisecond Test Harnesses and Invariant Defense \fi}
-\ifja
-コンパイルを通過したコードは、直ちにインメモリ・モックや単体テストによって検証される。
-Goの標準テストツール（\texttt{go test}）のように、キャッシュを活用して200ミリ秒以内で結果を返すテストハーネスこそが、開発者の脳を一切コンテキストスイッチさせずに「思考の速度」を維持する生命線となる。
-\else
-Code passing compilation is instantly subject to unit and invariant checks.
-Test harnesses executing within 200 milliseconds (such as `go test`) prevent cognitive task-switching, sustaining thought-speed development.
-\fi
-
-\chapter{\ifja UNIX哲学の現代的具現と実践的規律 \else Contemporary Embodiment of UNIX Philosophy and Practical Discipline \fi}
-
-\section{\ifja 半世紀前の原則がAIの手綱となる理由 \else Why Half-Century-Old Axioms Harness AI Entropy \fi}
-\ifja
-UNIXの伝統的な教義――「1つのことを巧みにこなすプログラムを書け」「標準ストリームを通じて連携させよ」――は、現代のAI協調開発において真価を発揮する。
-
-\begin{itemize}
-  \item \textbf{プロセスの直交性}: 各モジュールが標準入出力と明確なプロセス終了ステータスを持つことで、AI生成モジュール同士の干渉が物理的に遮断される。
-  \item \textbf{Path Isolation と最小権限}: 専用ディレクトリ（例: \texttt{\textasciitilde/.local/share/ssh-to/machines}）に隔離することで、AI生成ツールが既存環境を破壊するリスクを予防する。
-\end{itemize}
-\else
-The classical UNIX doctrine—"Write programs that do one thing and do it well" and "Write programs to handle text streams"—finds its ultimate purpose in AI-augmented engineering.
-
-\begin{itemize}
-  \item \textbf{Process Orthogonality}: Modules interacting solely via standard I/O and process exit statuses mechanically isolate synthetic side-effects.
-  \item \textbf{Path Isolation and Scoping}: Confining dynamic binaries to dedicated namespaces prevents runtime contamination.
-\end{itemize}
-\fi
-
-\chapter{\ifja 結語：自律的アーキテクトの矜持 \else Epilogue: The Pride of the Autonomous Architect \fi}
-\ifja
-AIは開発者の代行者ではない。それは、厳密に設計されたレールの上を疾走するタービンである。
-手綱（アーキテクチャ規律）を握り、境界を敷き、コンパイラとテストハーネスを監視員として配備すること。これこそが、情報エントロピーの荒波に呑まれることなく、堅牢で純度の高いシステムを光速で組み上げる唯一無二の道である。
-\else
-AI is not a surrogate for the software architect. It is a high-revving turbine requiring deterministic rails.
-By wielding architectural discipline, enforcing boundaries, and stationing compilers and test runners as ruthless gatekeepers, engineers tame entropy and construct resilient systems at the speed of thought.
+  \chapter{Epilogue: The Pride of the Autonomous Architect}
+  AI is not a surrogate for the software architect. It is a high-revving turbine requiring deterministic rails.
+  By wielding architectural discipline, enforcing boundaries, and stationing compilers and test runners as ruthless gatekeepers, engineers tame entropy and construct resilient systems at the speed of thought.
 \fi
 
 \backmatter
 
-\chapter*{\ifja 奥付 \else Colophon \fi}
+\ifja
+  \chapter*{奥付}
+\else
+  \chapter*{Colophon}
+\fi
+
 \begin{center}
 \textbf{AI Hypothesis-Verification Nano Cycle\texttrademark} \\
 \ifja 理論的基盤と実践アーキテクチャ \else Theoretical Foundations and Pragmatic Architecture \fi
