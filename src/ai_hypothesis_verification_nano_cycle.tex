@@ -1,7 +1,5 @@
 \documentclass[11pt,a4paper,openany]{book}
 
-% Language switch mechanism:
-% Uses LaTeX kernel \@ifundefined to prevent TeX conditional skip traps (\ifdefined / \newif conflict)
 \makeatletter
 \@ifundefined{ifja}{%
   \newif\ifja
@@ -10,26 +8,23 @@
 \makeatother
 
 \usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2cm, right=2cm]{geometry}
-\usepackage{fontspec}
 
 \ifja
-  \usepackage[japanese, bidi=basic, provide=*]{babel}
-  \babelprovide[import, onchar=ids fonts]{japanese}
-  \babelprovide[import, onchar=ids fonts]{english}
-  \babelfont{rm}{Noto Sans}
-  \babelfont[japanese]{rm}{Noto Sans CJK JP}
+  \usepackage{luatexja}
+  \usepackage{luatexja-fontspec}
+  \setmainjfont{Noto Sans CJK JP}
+  \setmainfont{Noto Sans}
   \usepackage{enumitem}
   \setlist[itemize]{label=-}
 \else
-  \usepackage[english, bidi=basic, provide=*]{babel}
-  \babelprovide[import, onchar=ids fonts]{english}
-  \babelfont{rm}{Noto Sans}
+  \usepackage{fontspec}
+  \setmainfont{Noto Sans}
   \usepackage{enumitem}
 \fi
 
 \usepackage{amsmath}
 \usepackage{booktabs}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 
 \ifja
   \title{\textbf{AI Hypothesis-Verification Nano Cycle\texttrademark} \\ \Large 確率的知性を決定論的境界で手懐ける極小反復アーキテクチャ}
