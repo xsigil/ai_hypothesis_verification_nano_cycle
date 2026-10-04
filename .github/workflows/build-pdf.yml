@@ -1,62 +1,57 @@
 name: Build and Release Bilingual PDFs
 
 on:
-push:
-branches: [ "main" ]
-tags:
-- "v*"
-workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    tags:
+      - "v*"
+  workflow_dispatch:
 
 permissions:
-contents: write
+  contents: write
 
 jobs:
-build:
-runs-on: ubuntu-latest
-container:
-image: ghcr.io/xu-cheng/texlive-full:latest
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/xu-cheng/texlive-full:latest
 
-steps:
-  # STREAMING_CHUNK:Checking out the repository...
-  - name: Checkout repository
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  # STREAMING_CHUNK:Installing required fonts and build utilities...
-  - name: Install System Dependencies (Alpine Linux)
-    run: |
-      apk update
-      apk add --no-cache \
-        make \
-        font-noto \
-        font-noto-cjk \
-        curl
+      - name: Install System Dependencies (Alpine Linux)
+        run: |
+          apk update
+          apk add --no-cache \
+            make \
+            font-noto \
+            font-noto-cjk \
+            curl
 
-  # STREAMING_CHUNK:Building Japanese and English PDFs via Makefile...
-  - name: Build Bilingual PDFs
-    run: |
-      make all
+      - name: Build Bilingual PDFs
+        run: |
+          make all
 
-  # STREAMING_CHUNK:Uploading build artifacts...
-  - name: Upload Japanese PDF Artifact
-    uses: actions/upload-artifact@v4
-    with:
-      name: ai_hypothesis_verification_nano_cycle_ja-pdf
-      path: build/ai_hypothesis_verification_nano_cycle_ja.pdf
-      retention-days: 30
+      - name: Upload Japanese PDF Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai_hypothesis_verification_nano_cycle_ja-pdf
+          path: build/ai_hypothesis_verification_nano_cycle_ja.pdf
+          retention-days: 30
 
-  - name: Upload English PDF Artifact
-    uses: actions/upload-artifact@v4
-    with:
-      name: ai_hypothesis_verification_nano_cycle_en-pdf
-      path: build/ai_hypothesis_verification_nano_cycle_en.pdf
-      retention-days: 30
+      - name: Upload English PDF Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai_hypothesis_verification_nano_cycle_en-pdf
+          path: build/ai_hypothesis_verification_nano_cycle_en.pdf
+          retention-days: 30
 
-  # STREAMING_CHUNK:Publishing GitHub Release with downloadable PDFs...
-  - name: Release to GitHub (on Tag or Latest)
-    uses: softprops/action-gh-release@v2
-    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
-    with:
-      files: |
-        build/ai_hypothesis_verification_nano_cycle_ja.pdf
-        build/ai_hypothesis_verification_nano_cycle_en.pdf
-      generate_release_notes: true
+      - name: Release to GitHub (on Tag or Latest)
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        with:
+          files: |
+            build/ai_hypothesis_verification_nano_cycle_ja.pdf
+            build/ai_hypothesis_verification_nano_cycle_en.pdf
+          generate_release_notes: true
